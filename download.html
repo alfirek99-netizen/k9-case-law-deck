@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Download K9 Case Law PowerPoint</title>
+<style>
+  body { margin:0; min-height:100dvh; display:grid; place-items:center;
+    background:#0a1628; color:#f4ead4; font-family:Georgia,serif; }
+  button { background:#c4a35a; color:#0a1628; border:0; padding:1rem 1.4rem;
+    font:700 1rem/1.2 Impact, "Arial Black", sans-serif; letter-spacing:.06em;
+    text-transform:uppercase; cursor:pointer; }
+  p { max-width:24rem; text-align:center; }
+  #st { min-height:1.4em; color:#c4a35a; }
+</style>
+</head>
+<body>
+<p>
+  K9 Operations and Case Law<br/>for Officers & Handlers<br/><br/>
+  <button type="button" id="btn">Download PowerPoint</button>
+  <span id="st"></span>
+</p>
+<script>
+const N = 12;
+const BASE = "https://raw.githubusercontent.com/alfirek99-netizen/k9-case-law-deck/main/";
+document.getElementById("btn").onclick = async () => {
+  const st = document.getElementById("st");
+  const btn = document.getElementById("btn");
+  btn.disabled = true;
+  try {
+    let s = "";
+    for (let i = 0; i < N; i++) {
+      st.textContent = "Loading … " + (i+1) + "/" + N;
+      const name = "part" + String(i).padStart(2,"0") + ".txt";
+      const r = await fetch(BASE + name);
+      if (!r.ok) throw new Error("missing " + name);
+      s += (await r.text()).trim();
+    }
+    st.textContent = "Building file…";
+    const bin = Uint8Array.from(atob(s), c => c.charCodeAt(0));
+    const blob = new Blob([bin], {type: "application/vnd.openxmlformats-officedocument.presentationml.presentation"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "K9-Case-Law-Officers-and-Handlers-Visual.pptx";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    st.textContent = "Saved. Open it in PowerPoint.";
+  } catch (e) {
+    st.textContent = String(e);
+  }
+  btn.disabled = false;
+};
+</script>
+</body>
+</html>
